@@ -1,3 +1,4 @@
+
 library(igraph)
 library(tools)
 library(dplyr)
@@ -5,7 +6,7 @@ library(dplyr)
 #### COMMAND LINE ARGUMENTS
 args <- commandArgs(trailingOnly=TRUE)
 filename <- args[1] # the file with the matrices in it
-ratio <- args[2] # on the diagonal -ratio * Re(lambda_1)
+ratio <- args[2] # on the diagonal: -ratio * Re(lambda_1)
 link_type <- args[3] # specify link-types to be included in matrix
 
 #### Parameters for HC (Hill Climber) and GA (Genetic Algorithm) --- Adjust as needed
