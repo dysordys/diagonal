@@ -2,8 +2,11 @@
 arguments <- commandArgs(trailingOnly=TRUE)
 path <- arguments[1] # path to data files
 base_selfreg <- as.numeric(arguments[2]) # baseline self-regulation strength
-h <- as.numeric(arguments[3]) # Hill exponent for the functional response
-numdiaggens <- as.numeric(arguments[4]) # no. times to resample diagonal entries
+h <- as.numeric(arguments[2]) # Hill exponent for the functional response
+numdiaggens <- as.numeric(arguments[3]) # no. times to resample diagonal entries
+
+## random seed
+rseed <- 0
 
 Jac <- function(B) { # return Jacobian of following system:
     ## dB/dt = as.numeric(r*B + B*X*((e*W)%*%(B^h)) - (B^h)*(t(W)%*%(B*X)) - d*B^2)
@@ -41,14 +44,24 @@ tl <- as.numeric(solve(diag(rep(1, S)) - A) %*% rep(1, S)) # get trophic levels
 tl <- round(tl, 6) # round to 6-digit precision (discard numerical errors)
 e <- matrix(0.2, S, S) # species j's assimilation efficiency of species i:
 for (i in 1:S) if (tl[i] == 2) e[i,] <- 0.1 # 0.1 for herbivores, otherwise 0.2
-B0 <- 1 # half-saturation constant for functional responses
+
 bodymass <- read.table(paste0(path, "bodymass.txt")) # species' body masses [kg]
 bodymass <- as.numeric(unlist(bodymass)) # convert to vector
 B <- bodymass^(-3/4) # equilibrium biomasses, based on Damuth's law
 
+## set random seed
+set.seed(rseed)
+## randomize the B0 values to be at least B/2
+B0 <- runif(length(B), B/2, B)
+
 qs <- seq(0, 7, by=1) + 0.5 # increasing self-regulation strengths
 nonzeros <- seq(floor(0.79*S), S, by=1) # how many diagonal entries are nonzero
-write(paste0("web\th\tk\tP\tq\tpstab"), stdout()) # header of output
+# write(paste0("web\th\tk\tP\tq\tpstab"), stdout()) # header of output
+
+d <- 0
+r <- getr(B) # choose r to yield B as the equilibrium solution
+J <- Jac(B) # calculate the Jacobian around that equilibrium
+eJ <- eigen(J, only.values=TRUE)$values # obtain its eigenvalues
 
 for (q in qs) { # main loop
     selfregstr <- base_selfreg * 2^q # determine strength of self-regulation
@@ -67,3 +80,4 @@ for (q in qs) { # main loop
                      q, "\t", stable/numdiaggens), stdout())
     } ## output: name of web, h (type of funcional response), k, P (equal to k/S),
 }     ## q, and the fraction of stable matrices out of numdiaggens ones
+
