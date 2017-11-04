@@ -1,7 +1,8 @@
 # diagonal
 
-Supporting material for the manuscript "Self-regulation and the stability of large ecological networks". This repository contains:
+Supporting material and manuscript "Self-regulation and the stability of large ecological networks". This repository contains:
 
+* `diagonal_final.pdf` Manuscript plus supplementary information in one pdf.
 * The folder `Code` which contains the following four files:
     * `prob_stability.R` This program can be used to replicate the numerical findings of Figure 1 in the manuscript. See detailed description in the source code itself.
     * `Damuth.R` This program calculates the community matrix using an explicit dynamical model with nonlinear functional responses, where parameters are chosen to lead to an equilibrium biomass distribution satisfying Damuth's law. It then evaluates the stability of the resulting matrix.
